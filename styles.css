@@ -1,0 +1,20 @@
+/* Custom CSS untuk Power Bar & Animasi */
+.power-box {
+    transition: all 0.3s ease;
+}
+
+/* Animasi berkedip untuk sinyal STRONG_BULLISH / STRONG_BEARISH */
+@keyframes pulse-blink {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(0.95);
+    }
+}
+
+.animate-signal-blink {
+    animation: pulse-blink 1.2s infinite ease-in-out;
+}

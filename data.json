@@ -1,0 +1,189 @@
+{
+    "updated_at": "2026-09-27 18:00:00",
+    "ihsg": {
+        "status": "BULLISH",
+        "value": 7350.5
+    },
+    "all_stocks": [
+        {
+            "ticker": "BBCA",
+            "close": 10200,
+            "ema20": 9900.0,
+            "ema50": 9600.0,
+            "rsi": 68.0,
+            "score": 6,
+            "signal": "STRONG_BULLISH",
+            "power_score": 10,
+            "trading_plan": {
+                "stop_loss": 9690,
+                "take_profit_1": 10710,
+                "take_profit_2": 11220
+            },
+            "power_bar": {
+                "power_percentage": 100,
+                "active_boxes": 10,
+                "total_boxes": 10,
+                "bar_color": "#10B981",
+                "is_animated": true
+            }
+        },
+        {
+            "ticker": "BMRI",
+            "close": 7100,
+            "ema20": 6900.0,
+            "ema50": 6800.0,
+            "rsi": 58.0,
+            "score": 3,
+            "signal": "BULLISH",
+            "power_score": 8,
+            "trading_plan": {
+                "stop_loss": 6745,
+                "take_profit_1": 7455,
+                "take_profit_2": 7810
+            },
+            "power_bar": {
+                "power_percentage": 80,
+                "active_boxes": 8,
+                "total_boxes": 10,
+                "bar_color": "#10B981",
+                "is_animated": false
+            }
+        },
+        {
+            "ticker": "BBRI",
+            "close": 5200,
+            "ema20": 5100.0,
+            "ema50": 5000.0,
+            "rsi": 62.0,
+            "score": 2,
+            "signal": "BULLISH",
+            "power_score": 7,
+            "trading_plan": {
+                "stop_loss": 4940,
+                "take_profit_1": 5460,
+                "take_profit_2": 5720
+            },
+            "power_bar": {
+                "power_percentage": 70,
+                "active_boxes": 7,
+                "total_boxes": 10,
+                "bar_color": "#10B981",
+                "is_animated": false
+            }
+        },
+        {
+            "ticker": "ASII",
+            "close": 5000,
+            "ema20": 5010.0,
+            "ema50": 5000.0,
+            "rsi": 49.0,
+            "score": 0,
+            "signal": "NEUTRAL",
+            "power_score": 5,
+            "trading_plan": {
+                "stop_loss": 4750,
+                "take_profit_1": 5250,
+                "take_profit_2": 5500
+            },
+            "power_bar": {
+                "power_percentage": 50,
+                "active_boxes": 5,
+                "total_boxes": 10,
+                "bar_color": "#9CA3AF",
+                "is_animated": false
+            }
+        },
+        {
+            "ticker": "TLKM",
+            "close": 2800,
+            "ema20": 2950.0,
+            "ema50": 3100.0,
+            "rsi": 28.0,
+            "score": -6,
+            "signal": "STRONG_BEARISH",
+            "power_score": 1,
+            "trading_plan": {
+                "stop_loss": 2660,
+                "take_profit_1": 2940,
+                "take_profit_2": 3080
+            },
+            "power_bar": {
+                "power_percentage": 10,
+                "active_boxes": 1,
+                "total_boxes": 10,
+                "bar_color": "#EF4444",
+                "is_animated": true
+            }
+        }
+    ],
+    "top_10_entry": [
+        {
+            "ticker": "BBCA",
+            "close": 10200,
+            "ema20": 9900.0,
+            "ema50": 9600.0,
+            "rsi": 68.0,
+            "score": 6,
+            "signal": "STRONG_BULLISH",
+            "power_score": 10,
+            "trading_plan": {
+                "stop_loss": 9690,
+                "take_profit_1": 10710,
+                "take_profit_2": 11220
+            },
+            "power_bar": {
+                "power_percentage": 100,
+                "active_boxes": 10,
+                "total_boxes": 10,
+                "bar_color": "#10B981",
+                "is_animated": true
+            }
+        }
+    ],
+    "swing_setup": [
+        {
+            "ticker": "BMRI",
+            "close": 7100,
+            "ema20": 6900.0,
+            "ema50": 6800.0,
+            "rsi": 58.0,
+            "score": 3,
+            "signal": "BULLISH",
+            "power_score": 8,
+            "trading_plan": {
+                "stop_loss": 6745,
+                "take_profit_1": 7455,
+                "take_profit_2": 7810
+            },
+            "power_bar": {
+                "power_percentage": 80,
+                "active_boxes": 8,
+                "total_boxes": 10,
+                "bar_color": "#10B981",
+                "is_animated": false
+            }
+        },
+        {
+            "ticker": "BBRI",
+            "close": 5200,
+            "ema20": 5100.0,
+            "ema50": 5000.0,
+            "rsi": 62.0,
+            "score": 2,
+            "signal": "BULLISH",
+            "power_score": 7,
+            "trading_plan": {
+                "stop_loss": 4940,
+                "take_profit_1": 5460,
+                "take_profit_2": 5720
+            },
+            "power_bar": {
+                "power_percentage": 70,
+                "active_boxes": 7,
+                "total_boxes": 10,
+                "bar_color": "#10B981",
+                "is_animated": false
+            }
+        }
+    ]
+}

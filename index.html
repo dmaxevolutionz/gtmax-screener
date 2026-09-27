@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screener Saham & Signal Power</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen p-4 font-sans">
+
+  <div class="max-w-7xl mx-auto space-y-4">
+    <!-- Header Summary -->
+    <header class="flex flex-col sm:flex-row justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-md">
+      <div>
+        <h1 class="text-xl font-bold text-emerald-400">📊 Screener Saham & Power Signal</h1>
+        <p class="text-xs text-slate-400">Ukuran Kartu 50% | Klik kartu untuk membuka Modal Analisa 200%</p>
+      </div>
+      <div id="last-updated" class="text-xs text-slate-400 mt-2 sm:mt-0">Update: -</div>
+    </header>
+
+    <!-- Navigasi Kategori (Tabs) -->
+    <div class="flex gap-2 overflow-x-auto pb-2 border-b border-slate-700 text-xs font-semibold">
+      <button onclick="switchTab('all_stocks', this)" class="tab-btn bg-emerald-600 px-3 py-1.5 rounded-lg whitespace-nowrap">Semua Saham</button>
+      <button onclick="switchTab('top_10_entry', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">Top 10 Entry</button>
+      <button onclick="switchTab('swing_setup', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">Swing Setup</button>
+      <button onclick="switchTab('top_10_weakest', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">10 Terlemah</button>
+      <button onclick="switchTab('golden_cross', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">Golden Cross</button>
+      <button onclick="switchTab('bearish_cross', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">Bearish Cross</button>
+      <button onclick="switchTab('overbought', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">Overbought</button>
+      <button onclick="switchTab('oversold', this)" class="tab-btn bg-slate-800 px-3 py-1.5 rounded-lg whitespace-nowrap hover:bg-slate-700">Oversold</button>
+    </div>
+
+    <!-- Grid Kartu Emiten -->
+    <div id="stock-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      <!-- Kartu-kartu emiten dimasukkan via JavaScript -->
+    </div>
+  </div>
+
+  <!-- MODAL POP-UP (200% Detail View) -->
+  <div id="analysis-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+      
+      <!-- Tombol Close Modal -->
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold p-2">✕</button>
+
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+        <div>
+          <h2 id="modal-ticker" class="text-3xl font-black text-emerald-400">BBCA</h2>
+          <p id="modal-signal" class="text-xs font-bold px-2 py-0.5 rounded inline-block mt-1">STRONG BULLISH</p>
+        </div>
+        <div class="text-right">
+          <div class="text-2xl font-extrabold text-white" id="modal-close">Rp 0</div>
+          <span class="text-xs text-slate-400">Harga Penutupan</span>
+        </div>
+      </div>
+
+      <!-- Modal Content: Grid Analisa -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        
+        <!-- Signal Power & Score -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700 space-y-2">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">⚡ Signal Power Score</h3>
+          <div class="flex items-center gap-3">
+            <span id="modal-power-score" class="text-4xl font-black text-amber-400">0/10</span>
+            <div class="w-full bg-slate-700 h-4 rounded-full overflow-hidden">
+              <div id="modal-power-bar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-1 text-[11px] pt-2 text-slate-300">
+            <div>EMA20: <b id="modal-ema20">0</b></div>
+            <div>EMA50: <b id="modal-ema50">0</b></div>
+            <div>RSI: <b id="modal-rsi">0</b></div>
+          </div>
+        </div>
+
+        <!-- Pola Candlestick Mandiri -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700 space-y-1">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">🕯️ Pola Candlestick (Mandiri)</h3>
+          <p id="modal-candle-pattern" class="text-sm font-semibold text-emerald-300">-</p>
+          <p class="text-[11px] text-slate-400 italic">Dihitung otomatis tanpa terikat strategi swing utama.</p>
+        </div>
+
+        <!-- Trading Plan -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700 space-y-2">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">🎯 Trading Plan</h3>
+          <div class="flex justify-between text-xs">
+            <span class="text-red-400">Stop Loss (SL):</span>
+            <b id="modal-sl" class="text-red-400">Rp 0</b>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-emerald-400">Take Profit 1 (TP1):</span>
+            <b id="modal-tp1" class="text-emerald-400">Rp 0</b>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-emerald-300">Take Profit 2 (TP2):</span>
+            <b id="modal-tp2" class="text-emerald-300">Rp 0</b>
+          </div>
+        </div>
+
+        <!-- Support & Resistance Visual -->
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700 space-y-2">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">📈 Support & Resistance (Pivot)</h3>
+          <div class="space-y-1 text-xs">
+            <div class="flex justify-between text-red-300"><span>Resist 2 (R2):</span><b id="modal-r2">Rp 0</b></div>
+            <div class="flex justify-between text-red-400"><span>Resist 1 (R1):</span><b id="modal-r1">Rp 0</b></div>
+            <div class="flex justify-between text-amber-300"><span>Pivot Point:</span><b id="modal-pivot">Rp 0</b></div>
+            <div class="flex justify-between text-emerald-400"><span>Support 1 (S1):</span><b id="modal-s1">Rp 0</b></div>
+            <div class="flex justify-between text-emerald-300"><span>Support 2 (S2):</span><b id="modal-s2">Rp 0</b></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let globalData = {};
+    let currentTab = 'all_stocks';
+
+    // Helper untuk memformat angka dengan aman agar tidak error saat nilai null/undefined
+    function formatCurrency(value) {
+      if (value === undefined || value === null || isNaN(value)) return 'Rp 0';
+      return 'Rp ' + Number(value).toLocaleString('id-ID');
+    }
+
+    async function loadScreenerData() {
+      try {
+        const response = await fetch('data.json');
+        globalData = await response.json();
+        document.getElementById('last-updated').innerText = `Update: ${globalData.updated_at || '-'}`;
+        renderGrid();
+      } catch (e) {
+        console.error("Gagal membaca data.json", e);
+      }
+    }
+
+    function switchTab(tabKey, element) {
+      currentTab = tabKey;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600');
+        btn.classList.add('bg-slate-800');
+      });
+      if (element) {
+        element.classList.add('bg-emerald-600');
+        element.classList.remove('bg-slate-800');
+      }
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const container = document.getElementById('stock-grid');
+      container.innerHTML = '';
+      const stocks = globalData[currentTab] || [];
+
+      if (stocks.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-8 text-slate-500 text-xs">Tidak ada saham dalam kategori ini.</div>`;
+        return;
+      }
+
+      stocks.forEach((stock, index) => {
+        const signalText = stock.signal || '';
+        const isBull = signalText.includes('BULLISH');
+        const colorClass = isBull ? 'text-emerald-400 border-emerald-500/30' : 'text-red-400 border-red-500/30';
+
+        const card = document.createElement('div');
+        card.className = `bg-slate-800 border rounded-lg p-2.5 cursor-pointer hover:bg-slate-700/80 transition-all flex flex-col justify-between h-32 ${colorClass}`;
+        
+        // Menggunakan Event Listener terpisah agar terhindar dari masalah penanganan argumen pada inline onclick
+        card.addEventListener('click', () => openModal(stock));
+
+        const powerBar = stock.power_bar || {};
+        const powerPercentage = powerBar.power_percentage || 0;
+        const barColor = powerBar.bar_color || '#10b981';
+
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center">
+              <span class="font-extrabold text-sm text-white">${stock.ticker || '-'}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold ${isBull ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}">${stock.power_score || 0}/10</span>
+            </div>
+            <div class="text-xs font-bold text-slate-200 mt-1">${formatCurrency(stock.close)}</div>
+          </div>
+
+          <div class="space-y-1">
+            <div class="text-[10px] text-slate-400 flex justify-between">
+              <span>RSI: ${stock.rsi || 0}</span>
+              <span>SIG: ${signalText.replace('_', ' ')}</span>
+            </div>
+            <!-- Power Bar Shell 50% -->
+            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+              <div class="h-full" style="width: ${powerPercentage}%; background-color: ${barColor}"></div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openModal(stock) {
+      try {
+        const modal = document.getElementById('analysis-modal');
+
+        document.getElementById('modal-ticker').innerText = stock.ticker || '-';
+        document.getElementById('modal-close').innerText = formatCurrency(stock.close);
+        
+        const sigEl = document.getElementById('modal-signal');
+        const signalText = stock.signal || '';
+        sigEl.innerText = signalText.replace('_', ' ');
+        sigEl.className = `text-xs font-bold px-2 py-0.5 rounded inline-block mt-1 ${signalText.includes('BULLISH') ? 'bg-emerald-950 text-emerald-400' : 'bg-red-950 text-red-400'}`;
+
+        document.getElementById('modal-power-score').innerText = `${stock.power_score || 0}/10`;
+        
+        const powerBar = stock.power_bar || {};
+        const powerBarEl = document.getElementById('modal-power-bar');
+        powerBarEl.style.width = `${powerBar.power_percentage || 0}%`;
+        powerBarEl.style.backgroundColor = powerBar.bar_color || '#10b981';
+
+        document.getElementById('modal-ema20').innerText = stock.ema20 || 0;
+        document.getElementById('modal-ema50').innerText = stock.ema50 || 0;
+        document.getElementById('modal-rsi').innerText = stock.rsi || 0;
+
+        document.getElementById('modal-candle-pattern').innerText = stock.candle_pattern || '-';
+
+        const tp = stock.trading_plan || {};
+        document.getElementById('modal-sl').innerText = formatCurrency(tp.stop_loss);
+        document.getElementById('modal-tp1').innerText = formatCurrency(tp.take_profit_1);
+        document.getElementById('modal-tp2').innerText = formatCurrency(tp.take_profit_2);
+
+        const sr = stock.support_resistance || {};
+        document.getElementById('modal-r2').innerText = formatCurrency(sr.r2);
+        document.getElementById('modal-r1').innerText = formatCurrency(sr.r1);
+        document.getElementById('modal-pivot').innerText = formatCurrency(sr.pivot);
+        document.getElementById('modal-s1').innerText = formatCurrency(sr.s1);
+        document.getElementById('modal-s2').innerText = formatCurrency(sr.s2);
+
+        // Buka modal: Hapus hidden dan tambahkan flex
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } catch (err) {
+        console.error("Gagal membuka modal:", err);
+      }
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('analysis-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Tutup modal jika area luar (backdrop) diklik
+    document.getElementById('analysis-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('analysis-modal')) {
+        closeModal();
+      }
+    });
+
+    // Tutup modal jika tombol ESC ditekan
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    loadScreenerData();
+  </script>
+</body>
+</html>
