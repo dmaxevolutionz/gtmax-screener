@@ -1,7 +1,7 @@
 {
-  "name": "Sh4ndy Stock Screener",
-  "short_name": "Screener",
-  "description": "Aplikasi Pemindai Saham dan Analisis Teknikal Harian",
+  "name": "Screener Saham & Signal Power",
+  "short_name": "Screener Saham",
+  "description": "Aplikasi Screener Saham dan Analisis Signal Power Harian",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",
