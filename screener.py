@@ -1,7 +1,16 @@
 import json
 import math
+import random
+from datetime import datetime
+
 # Mengimpor daftar emiten dari file emiten.py terpisah
-from emiten import EMITEN_DATA
+try:
+    from emiten import EMITEN_DATA
+except ImportError:
+    EMITEN_DATA = [
+        {"ticker": "BBCA", "category": "Bluechip"},
+        {"ticker": "BMRI", "category": "Bluechip"}
+    ]
 
 # Mengambil list kode ticker saja jika EMITEN_DATA berbentuk list of dict / list
 if isinstance(EMITEN_DATA, dict):
@@ -13,9 +22,6 @@ else:
 
 
 def detect_candle_pattern(open_p: float, high_p: float, low_p: float, close_p: float) -> str:
-    """
-    Kalkulasi pola candlestick mandiri (bebas/tidak terikat strategi swing).
-    """
     body = abs(close_p - open_p)
     candle_range = high_p - low_p if high_p != low_p else 1.0
     upper_shade = high_p - max(open_p, close_p)
@@ -36,9 +42,6 @@ def detect_candle_pattern(open_p: float, high_p: float, low_p: float, close_p: f
 
 
 def calculate_support_resistance(high_p: float, low_p: float, close_p: float) -> dict:
-    """
-    Kalkulasi Support & Resistance Visual berbasis Pivot Point (Mandiri).
-    """
     pivot = (high_p + low_p + close_p) / 3.0
     r1 = round((2 * pivot) - low_p)
     s1 = round((2 * pivot) - high_p)
@@ -56,15 +59,6 @@ def calculate_support_resistance(high_p: float, low_p: float, close_p: float) ->
 
 def calculate_swing_and_power_bar(open_p: float, high_p: float, low_p: float, close_p: float, 
                                    ema20: float, ema50: float, rsi: float, prev_ema20: float = None, prev_ema50: float = None) -> dict:
-    """
-    1. Algoritma Strategi Swing & Trading Plan (SL / TP)
-    2. Kalkulasi Sinyal & Power Score (Skala 1-10)
-    3. Logika Visual Power Bar
-    4. Indikator Tambahan: Golden Cross, Bearish Cross, Overbought, Oversold
-    """
-    # -------------------------------------------------------------
-    # A. KALKULASI SKOR STRATEGI SWING (EMA20, EMA50, RSI14)
-    # -------------------------------------------------------------
     score = 0
 
     # Evaluasi EMA 20
@@ -97,9 +91,7 @@ def calculate_swing_and_power_bar(open_p: float, high_p: float, low_p: float, cl
     elif rsi < 30:
         score -= 2
 
-    # -------------------------------------------------------------
-    # B. KLASIFIKASI SINYAL & POWER SCORE (1 - 10)
-    # -------------------------------------------------------------
+    # Klasifikasi Sinyal
     if score >= 4:
         signal = "STRONG_BULLISH"
     elif score >= 1:
@@ -111,19 +103,14 @@ def calculate_swing_and_power_bar(open_p: float, high_p: float, low_p: float, cl
     else:
         signal = "NEUTRAL"
 
-    power_score = min(10, max(1, round((score + 5) / 10 * 10)))
+    power_score = min(10, max(1, round((score + 6) / 12 * 10)))
 
-    # -------------------------------------------------------------
-    # C. TRADING PLAN (Stop Loss & Take Profit)
-    # -------------------------------------------------------------
+    # Trading Plan
     stop_loss = round(close_p * 0.95)
     take_profit_1 = round(close_p * 1.05)
     take_profit_2 = round(close_p * 1.10)
 
-    # -------------------------------------------------------------
-    # D. INDIKATOR CROSSING & RSI STATUS
-    # -------------------------------------------------------------
-    # Simulasi/Cek Golden Cross & Bearish Cross
+    # Indikator Status
     p_ema20 = prev_ema20 if prev_ema20 is not None else ema20 * 0.99
     p_ema50 = prev_ema50 if prev_ema50 is not None else ema50
     
@@ -133,24 +120,18 @@ def calculate_swing_and_power_bar(open_p: float, high_p: float, low_p: float, cl
     is_overbought = rsi >= 70
     is_oversold = rsi <= 30
 
-    # -------------------------------------------------------------
-    # E. KALKULASI MANDIRI: CANDLE PATTERN & SUPPORT RESISTANCE
-    # -------------------------------------------------------------
     candle_pattern = detect_candle_pattern(open_p, high_p, low_p, close_p)
     sup_res = calculate_support_resistance(high_p, low_p, close_p)
 
-    # -------------------------------------------------------------
-    # F. KONTROL VISUAL POWER BAR
-    # -------------------------------------------------------------
     power_percentage = power_score * 10
     active_boxes = power_score
 
     if signal in ["STRONG_BULLISH", "BULLISH"]:
-        bar_color = "#10B981"  # Hijau
+        bar_color = "#10B981"
     elif signal in ["STRONG_BEARISH", "BEARISH"]:
-        bar_color = "#EF4444"  # Merah
+        bar_color = "#EF4444"
     else:
-        bar_color = "#9CA3AF"  # Abu-abu
+        bar_color = "#9CA3AF"
 
     return {
         "analysis": {
@@ -188,35 +169,45 @@ def calculate_swing_and_power_bar(open_p: float, high_p: float, low_p: float, cl
 
 def fetch_stock_data(ticker: str) -> dict:
     """
-    Database simulasi harga emiten.
+    Menggenerasikan data teknikal acak untuk SEMUA emiten agar terdistribusi penuh di UI.
+    (Jika nantinya terhubung API seperti YFinance, bagian ini tinggal diganti).
     """
-    sample_database = {
-        "BBCA": {"open": 10100, "high": 10300, "low": 10050, "close": 10250, "ema20": 9900, "ema50": 9600, "rsi": 68, "prev_ema20": 9590, "prev_ema50": 9600},
-        "BMRI": {"open": 7000, "high": 7150, "low": 6950, "close": 7100, "ema20": 6900, "ema50": 6800, "rsi": 58},
-        "BBRI": {"open": 5100, "high": 5250, "low": 5050, "close": 5200, "ema20": 5100, "ema50": 5000, "rsi": 72}, # Overbought
-        "TLKM": {"open": 2850, "high": 2880, "low": 2780, "close": 2800, "ema20": 2950, "ema50": 3100, "rsi": 26}, # Oversold & Bearish
-        "ASII": {"open": 5000, "high": 5050, "low": 4950, "close": 5000, "ema20": 5010, "ema50": 5000, "rsi": 49},
-        "GOTO": {"open": 62, "high": 66, "low": 61, "close": 65, "ema20": 62, "ema50": 60, "rsi": 66},
-        "ADRO": {"open": 3600, "high": 3750, "low": 3580, "close": 3720, "ema20": 3500, "ema50": 3510, "rsi": 64, "prev_ema20": 3505, "prev_ema50": 3510}, # Golden Cross
-        "UNVR": {"open": 2400, "high": 2420, "low": 2300, "close": 2320, "ema20": 2390, "ema50": 2380, "rsi": 29, "prev_ema20": 2385, "prev_ema50": 2380}, # Bearish Cross & Oversold
-        "AMMN": {"open": 9800, "high": 10200, "low": 9750, "close": 10150, "ema20": 9500, "ema50": 9100, "rsi": 75}, # Overbought
-        "BREN": {"open": 6800, "high": 7100, "low": 6750, "close": 7050, "ema20": 6600, "ema50": 6300, "rsi": 71}  # Overbought
+    # Menggunakan hash ticker sebagai seed agar nilai konsisten per ticker tetapi bervariasi antar emiten
+    random.seed(sum(ord(c) for c in ticker))
+
+    base_price = random.choice([50, 200, 500, 1500, 3000, 5000, 10000])
+    variation = random.uniform(-0.05, 0.05)
+    close_p = round(base_price * (1 + variation))
+    open_p = round(close_p * random.uniform(0.97, 1.03))
+    high_p = max(open_p, close_p) + round(base_price * random.uniform(0.01, 0.03))
+    low_p = min(open_p, close_p) - round(base_price * random.uniform(0.01, 0.03))
+
+    ema20 = close_p * random.uniform(0.92, 1.08)
+    ema50 = close_p * random.uniform(0.88, 1.12)
+    rsi = random.uniform(20, 80)
+
+    # Menghasilkan variasi indikator cross secara acak
+    prev_ema20 = ema20 * random.choice([0.98, 1.02])
+    prev_ema50 = ema50
+
+    return {
+        "open": open_p,
+        "high": high_p,
+        "low": low_p,
+        "close": close_p,
+        "ema20": ema20,
+        "ema50": ema50,
+        "rsi": rsi,
+        "prev_ema20": prev_ema20,
+        "prev_ema50": prev_ema50
     }
-    
-    return sample_database.get(ticker, {
-        "open": 1000, "high": 1020, "low": 980, "close": 1000, 
-        "ema20": 1000, "ema50": 1000, "rsi": 50
-    })
 
 
 def run_screener():
-    """
-    Memproses seluruh data emiten dan menyimpan kualifikasi ke data.json
-    """
     print(f"🔍 Memulai pemindaian untuk {len(LIST_EMITEN)} emiten...")
 
     output_data = {
-        "updated_at": "2026-09-27 22:00:00",
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "ihsg": {"status": "BULLISH", "value": 7350.5},
         "all_stocks": [],
         "top_10_entry": [],
@@ -229,6 +220,9 @@ def run_screener():
     }
 
     for ticker in LIST_EMITEN:
+        if not ticker:
+            continue
+            
         stock = fetch_stock_data(ticker)
         
         result = calculate_swing_and_power_bar(
@@ -275,7 +269,7 @@ def run_screener():
     with open("data.json", "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent=4)
 
-    print("✅ Pemindaian selesai! Hasil disimpan di 'data.json'.")
+    print(f"✅ Pemindaian selesai! Berhasil memproses {len(output_data['all_stocks'])} emiten ke 'data.json'.")
 
 
 if __name__ == "__main__":
