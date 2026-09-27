@@ -1,4 +1,4 @@
-const CACHE_NAME = 'screener-saham-v1';
+const CACHE_NAME = 'screener-saham-v2';
 
 // Daftar file dan CDN yang digunakan oleh index.html
 const ASSETS_TO_CACHE = [
